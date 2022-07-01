@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"image/color"
 	"mazegame/maze"
+	"mazegame/screens"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -20,30 +21,26 @@ func main() {
 	w.SetFixedSize(true)
 	var level maze.Level
 
-	labelGameName := canvas.NewText("MAZE GAME", color.NRGBA{R: 255, G: 200, B: 25, A: 230})
+	labelGameName := canvas.NewText("MAZE GAME", color.NRGBA{R: 165, G: 200, B: 240, A: 205})
 	labelGameName.Resize(fyne.NewSize(450, 50))
 	labelGameName.TextSize = 50
 	labelGameName.TextStyle = fyne.TextStyle{Bold: true}
 	labelGameName.Move(fyne.NewPos(150, 175))
 
-	buttonColor := canvas.NewRectangle(color.NRGBA{R: 255, G: 240, B: 25, A: 230})
+	buttonColor := canvas.NewRectangle(color.NRGBA{R: 165, G: 200, B: 240, A: 205})
 	buttonColor.SetMinSize(fyne.NewSize(100, 50))
 
 	buttonStart := widget.NewButton("Start", func() {
-		fmt.Println(level)
-		// w.Hide()
-		// isActive := make(chan bool, 1)
-		// screens.GameScreen(isActive, level)
-		// for {
-		// 	switch {
-		// 	case <-isActive:
-		// 		w.Show()
-		// 	}
-		// }
+		w.Hide()
+
+		ch := make(chan (int), 1)
+		screens.GameScreen(ch, level)
+		i := <-ch
+		fmt.Println(i)
+		w.Show()
 
 	})
 	buttonStart.Resize(fyne.NewSize(100, 50))
-	// buttonStart.Move(fyne.NewPos(200, 250))
 	buttonStartContent := container.NewWithoutLayout(buttonColor, buttonStart)
 	buttonStartContent.Move(fyne.NewPos(200, 250))
 
@@ -51,43 +48,39 @@ func main() {
 		w.Close()
 	})
 	buttonQuit.Resize(fyne.NewSize(100, 50))
-	// buttonQuit.Move(fyne.NewPos(400, 250))
 	buttonQuitContent := container.New(layout.NewMaxLayout(), buttonColor, buttonQuit)
 	buttonQuitContent.Move(fyne.NewPos(300, 250))
 
 	levelLable := canvas.NewText("Level:", color.White)
 	levelLable.TextStyle = fyne.TextStyle{Bold: true, Italic: true}
-	levelLable.TextSize = 32
-	levelLable.Resize(fyne.NewSize(100, 50))
+	levelLable.TextSize = 16
+	levelLable.Resize(fyne.NewSize(50, 50))
 	levelLable.Move(fyne.NewPos(200, 300))
 
 	levelList := widget.NewSelect([]string{
-		"Light",
-		"SemiLight",
+		"Easy",
 		"Medium",
-		"SemiHard",
 		"Hard",
+		"Advanced",
+		"Wizard!",
 	}, func(s string) {
 		switch s {
-		case "Light":
-			level = maze.Light
-		case "SemiLight":
-			level = maze.SemiLight
+		case "Easy":
+			level = maze.Easy
 		case "Medium":
 			level = maze.Medium
-		case "SemiHard":
-			level = maze.SemiHard
 		case "Hard":
 			level = maze.Hard
+		case "Advanced":
+			level = maze.Advanced
+		case "Wizard!":
+			level = maze.Wizard
 		}
 	})
-	levelList.Resize(fyne.NewSize(100, 50))
-	levelList.Move(fyne.NewPos(300, 300))
+	levelList.Resize(fyne.NewSize(150, 50))
+	levelList.Move(fyne.NewPos(250, 300))
 	levelList.SetSelectedIndex(0)
 
-	// gameNameBox := container.New(layout.NewCenterLayout(), labelGameName)
-	// gameNameBox.Move(fyne.NewPos(0, 0))
-	// buttonsBox := container.New(layout.NewHBoxLayout(), layout.NewSpacer(), buttonStart, buttonQuit, layout.NewSpacer())
 	mainBox := container.NewWithoutLayout(labelGameName, buttonStartContent, buttonQuitContent, levelLable, levelList)
 
 	w.SetContent(mainBox)

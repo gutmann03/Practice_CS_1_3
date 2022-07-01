@@ -32,13 +32,14 @@ func (b *MazeBuilder) CreateMaze() *Maze {
 	height := START_SIZE + int(b.level)*STEP
 	maze := newMazePlan(width, height)
 	return &Maze{
-		Plan:       *maze,
-		Width:      width,
-		Height:     height,
-		SelfLevel:  b.level,
-		BlockSize:  BLOCK_SIZE - int(b.level) + 1,
-		StartPoint: getStartPoint(maze),
-		EndPoint:   getEndPoint(maze),
+		Plan:         *maze,
+		Width:        width,
+		Height:       height,
+		SelfLevel:    b.level,
+		BlockSize:    BLOCK_SIZE - int(b.level),
+		StartPoint:   getStartPoint(maze),
+		EndPoint:     getEndPoint(maze),
+		CurrentPoint: getStartPoint(maze),
 	}
 }
 
@@ -108,8 +109,8 @@ func getStartPoint(mazeQ *MazePlan) (point Point) {
 	maze := *mazeQ
 	for h := range maze {
 		for w := range maze[h] {
-			if maze[h][w] {
-				point = Point{X: w, Y: h}
+			if maze[h][len(maze[h])-w-1] {
+				point = Point{X: len(maze[h]) - w - 1, Y: h}
 				break
 			}
 		}

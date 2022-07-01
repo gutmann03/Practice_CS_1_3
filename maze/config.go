@@ -2,16 +2,16 @@ package maze
 
 const (
 	START_SIZE int = 30
-	STEP       int = 10
-	BLOCK_SIZE int = 15
+	STEP       int = 4
+	BLOCK_SIZE int = 20
 )
 
 type Level int
 
 const (
-	Light Level = iota + 1
-	SemiLight
+	Easy Level = iota + 1
 	Medium
-	SemiHard
 	Hard
+	Advanced
+	Wizard
 )
