@@ -5,6 +5,8 @@ import (
 	"image/color"
 	"mazegame/maze"
 	"mazegame/screens"
+	"mazegame/status"
+	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -25,18 +27,34 @@ func main() {
 	labelGameName.Resize(fyne.NewSize(450, 50))
 	labelGameName.TextSize = 50
 	labelGameName.TextStyle = fyne.TextStyle{Bold: true}
-	labelGameName.Move(fyne.NewPos(150, 175))
+	labelGameName.Move(fyne.NewPos(137, 175))
+
+	labelWinner := canvas.NewText("", color.NRGBA{R: 0, G: 220, B: 100, A: 200})
+	labelWinner.TextSize = 18
+	labelWinner.Move(fyne.NewPos(175, 350))
+	labelWinner.Hide()
 
 	buttonColor := canvas.NewRectangle(color.NRGBA{R: 165, G: 200, B: 240, A: 205})
 	buttonColor.SetMinSize(fyne.NewSize(100, 50))
 
 	buttonStart := widget.NewButton("Start", func() {
 		w.Hide()
+		timer := time.Now()
 
-		ch := make(chan (int), 1)
+		ch := make(chan status.Status, 1)
 		screens.GameScreen(ch, level)
-		i := <-ch
-		fmt.Println(i)
+		switch <-ch {
+		case status.Positive:
+			labelWinner.Text = fmt.Sprintf("You won! It took %v seconds.", int(time.Since(timer).Seconds()))
+		case status.Negative:
+			labelWinner.Text = "Play again!!!"
+		}
+		labelWinner.Show()
+
+		time.AfterFunc(time.Second*5, func() {
+			labelWinner.Hide()
+			labelWinner.Refresh()
+		})
 		w.Show()
 
 	})
@@ -81,8 +99,10 @@ func main() {
 	levelList.Move(fyne.NewPos(250, 300))
 	levelList.SetSelectedIndex(0)
 
-	mainBox := container.NewWithoutLayout(labelGameName, buttonStartContent, buttonQuitContent, levelLable, levelList)
+	mainBox := container.NewWithoutLayout(labelWinner, labelGameName, buttonStartContent, buttonQuitContent, levelLable, levelList)
 
+	r, _ := fyne.LoadResourceFromPath("./mazeImg.svg")
+	w.SetIcon(r)
 	w.SetContent(mainBox)
 	w.ShowAndRun()
 }

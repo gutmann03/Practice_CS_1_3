@@ -3,13 +3,14 @@ package screens
 import (
 	"image/color"
 	"mazegame/maze"
+	"mazegame/status"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 )
 
-func GameScreen(ch chan int, level maze.Level) {
+func GameScreen(ch chan status.Status, level maze.Level) {
 	myWindow := fyne.CurrentApp().NewWindow("Maze Game")
 	dark := color.NRGBA{R: 48, G: 48, B: 48, A: 190}
 	light := color.NRGBA{R: 165, G: 200, B: 240, A: 205}
@@ -72,24 +73,26 @@ func GameScreen(ch chan int, level maze.Level) {
 				myMaze.CurrentPoint.X = w
 			}
 		case "Q":
-			ch <- -1
+			ch <- status.Negative
 			myWindow.Close()
 		}
 		player.Refresh()
 		if myMaze.CurrentPoint.X == myMaze.EndPoint.X && myMaze.CurrentPoint.Y == myMaze.EndPoint.Y {
-			ch <- 1
+			ch <- status.Positive
 			myWindow.Hide()
 			myWindow.Close()
 		}
 	})
 
 	myWindow.SetOnClosed(func() {
-		ch <- -1
+		ch <- status.Negative
 	})
 
 	myWindow.SetContent(mainContent)
 	myWindow.Resize(fyne.NewSize(float32(myMaze.Width*myMaze.BlockSize), float32(myMaze.Height*myMaze.BlockSize)))
 
+	r, _ := fyne.LoadResourceFromPath("mazeImg.svg")
+	myWindow.SetIcon(r)
 	myWindow.Show()
 	myWindow.Content().Refresh()
 
