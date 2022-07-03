@@ -41,7 +41,7 @@ func GameScreen(ch chan status.Status, level maze.Level) {
 			content.Add(block)
 		}
 	}
-	player := canvas.NewImageFromFile("./dot.png")
+	player := canvas.NewImageFromFile("dot.png")
 	player.Resize(fyne.NewSize(float32(myMaze.BlockSize), float32(myMaze.BlockSize)))
 	player.Move(fyne.NewPos(float32(myMaze.StartPoint.X*myMaze.BlockSize), float32(myMaze.StartPoint.Y*myMaze.BlockSize)))
 

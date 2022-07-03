@@ -1,9 +1,5 @@
 package maze
 
-type MazeConfigurator interface {
-	CreateMaze(level Level) *Maze
-}
-
 // Maze holds the bools of a generated maze
 type MazePlan [][]bool
 
